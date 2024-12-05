@@ -3,7 +3,7 @@
 client_id = "d7984080909f698690013bb4a01a4a27"
 name = "GSAN/Switch Customer Portal"
 handle = "gsan-customer-portal-3"
-application_url = "https://blue-pen-ws-utility.trycloudflare.com"
+application_url = "https://contrary-poetry-wit-cinema.trycloudflare.com"
 embedded = false
 
 [access_scopes]
@@ -12,9 +12,9 @@ scopes = "customer_read_customers,read_customers,read_online_store_navigation,re
 
 [auth]
 redirect_urls = [
-  "https://blue-pen-ws-utility.trycloudflare.com/auth/callback",
-  "https://blue-pen-ws-utility.trycloudflare.com/auth/shopify/callback",
-  "https://blue-pen-ws-utility.trycloudflare.com/api/auth/callback"
+  "https://contrary-poetry-wit-cinema.trycloudflare.com/auth/callback",
+  "https://contrary-poetry-wit-cinema.trycloudflare.com/auth/shopify/callback",
+  "https://contrary-poetry-wit-cinema.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
