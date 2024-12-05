@@ -1,0 +1,32 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "d7984080909f698690013bb4a01a4a27"
+name = "GSAN/Switch Customer Portal"
+handle = "gsan-customer-portal-3"
+application_url = "https://blue-pen-ws-utility.trycloudflare.com"
+embedded = false
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "customer_read_customers,read_customers,read_online_store_navigation,read_orders,unauthenticated_read_customers,unauthenticated_write_customers,write_customers"
+
+[auth]
+redirect_urls = [
+  "https://blue-pen-ws-utility.trycloudflare.com/auth/callback",
+  "https://blue-pen-ws-utility.trycloudflare.com/auth/shopify/callback",
+  "https://blue-pen-ws-utility.trycloudflare.com/api/auth/callback"
+]
+
+[webhooks]
+api_version = "2024-10"
+
+  [[webhooks.subscriptions]]
+  topics = [ "app/uninstalled" ]
+  uri = "https://565f-2604-3d08-4e82-a500-4cc3-afca-b09c-e2be.ngrok-free.app/webhooks/app/uninstalled"
+
+[pos]
+embedded = false
+
+[build]
+dev_store_url = "gsan-test.myshopify.com"
+automatically_update_urls_on_dev = true
