@@ -1,80 +1,55 @@
+import { Layout } from '../../components/Layout';
 import { useActionData } from '@remix-run/react';
-import { useUser } from '../context/UserContext';
-import { unauthenticated } from '../shopify.server';
-import { createUserSession } from '../session.server';
-import Layout from '../components/layout/Layout';
-// import { shopifyStorefrontAccessToken } from './api.storefrontToken';
-
-// const customerLoginMutation = `
-//   mutation customerAccessTokenCreate($input: CustomerAccessTokenCreateInput!) {
-//     customerAccessTokenCreate(input: $input) {
-//       customerAccessToken {
-//         accessToken
-//         expiresAt
-//       }
-//       userErrors {
-//         field
-//         message
-//       }
-//     }
-//   }
-// `;
+import { useUser } from '../../utils/useUser';
 
 export const action = async ({ request }) => {
-	const formData = new URLSearchParams(await request.text());
+	const formData = await request.formData();
 	const email = formData.get('email');
 	const password = formData.get('password');
-	const shop = formData.get('shop');
-	console.log('📧 Shop:', shop);
 
-	const { storefront } = await unauthenticated.storefront(`${shop}.myshopify.com`);
+	if (!email || !password) {
+		return { error: 'Email and password are required.' }, { status: 400 };
+	}
 
-	// const storefrontAccessToken = await shopifyStorefrontAccessToken(request, shop);
-	const storefrontAccessToken = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN;
-	console.log('🔑 Storefront Access Token:', storefrontAccessToken);
+	try {
+		const response = await fetch(`https://${process.env.SHOPIFY_STORE_DOMAIN}/api/2023-04/graphql.json`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-Shopify-Storefront-Access-Token': process.env.SHOPIFY_STOREFRONT_TOKEN,
+			},
+			body: JSON.stringify({
+				query: `#graphql
+            mutation customerAccessTokenCreate($input: CustomerAccessTokenCreateInput!) {
+              customerAccessTokenCreate(input: $input) {
+                customerAccessToken {
+                  accessToken
+                  expiresAt
+                }
+                userErrors {
+                  field
+                  message
+                }
+              }
+            }
+          `,
+				variables: { input: { email, password } },
+			}),
+		});
 
-	const response = await storefront.graphql(
-		`#graphql
-  mutation customerAccessTokenCreate {
-    customerAccessTokenCreate(input: {email: ${email}, password: $}) {
-      customerAccessToken {
-        accessToken
-      }
-      customerUserErrors {
-        message
-      }
-    }
-  }`
-	);
+		const result = await response.json();
 
-// const response = await fetch(`https://${shop}.myshopify.com/api/2024-01/graphql.json`, {
-	// 	method: 'POST',
-	// 	headers: {
-	// 		'Content-Type': 'application/json',
-	// 		'X-Shopify-Storefront-Access-Token': storefrontAccessToken,
-	// 	},
-	// 	body: JSON.stringify({
-	// 		query: customerLoginMutation,
-	// 		variables: {
-	// 			input: {
-	// 				email,
-	// 				password,
-	// 			},
-	// 		},
-	// 	}),
-	// });
+		if (result.errors || result.data.customerAccessTokenCreate.userErrors.length) {
+			return json({ error: 'Invalid login credentials.' }, { status: 401 });
+		}
 
-	console.log('🐯 Response:', response);
-
-	const result = await response.json();
-
-	// if (result.data.customerAccessTokenCreate.userErrors.length) {
-	// 	return json({ errors: result.data.customerAccessTokenCreate.userErrors }, { status: 400 });
-	// }
-
-	const customerAccessToken = result.data.customerAccessTokenCreate.customerAccessToken.accessToken;
-	console.log('🏐 Customer access token: ', customerAccessToken);
-	return createUserSession({ accessToken: customerAccessToken }, 'shopify', '/customer');
+		return {
+			token: result.data.customerAccessTokenCreate.customerAccessToken,
+		};
+	} catch (error) {
+		console.error('❌ Error during customer login:', error);
+		return { error: 'An unexpected error occurred.' }, { status: 500 };
+	}
 };
 
 export default function Login() {
