@@ -19,10 +19,10 @@ export const loader = async ({ request }) => {
 	const shop = process.env.SHOPIFY_SHOP_NAME; // Access the environment variable
 
 	// If there is a user session and the path is /login, redirect to /performance
-	// if (path.endsWith('/login') && user) {
-	// 	console.log('🏓 Redirecting to dashboard');
-	// 	return redirect('/performance');
-	// }
+	if (path.endsWith('/login') && user) {
+		console.log('🏓 Redirecting to dashboard');
+		return redirect('/performance');
+	}
 
 	// If there is no user session and the path is not /login, redirect to /login
 	// if (!path.endsWith('/login') && !user) {

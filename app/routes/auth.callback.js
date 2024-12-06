@@ -3,6 +3,7 @@ import shopify from '../shopify.server';
 import { createUserSession } from '../session.server';
 
 export const loader = async ({ request }) => {
+	console.log('🎈 auth.callback.jsx:', request.url);
 	try {
 		const session = await shopify.authenticate.callback(request);
 		const { accessToken, shop } = session;

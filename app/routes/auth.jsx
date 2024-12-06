@@ -2,7 +2,8 @@ import { redirect } from '@remix-run/node';
 import shopify from '../shopify.server';
 
 export const loader = async ({ request }) => {
-	const shop = process.env.SHOPIFY_STORE_DOMAIN; // Single store domain
+	console.log('🎈 auth.jsx:', request.url);
+	const shop = process.env.SHOPIFY_SHOP_NAME; // Single store domain
 
 	if (!shop) {
 		throw new Error('The shop domain is not configured.');

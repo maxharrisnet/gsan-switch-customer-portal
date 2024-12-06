@@ -1,6 +1,6 @@
-import { Layout } from '../../components/Layout';
+import { Layout } from '../components/layout/Layout';
 import { useActionData } from '@remix-run/react';
-import { useUser } from '../../utils/useUser';
+import { useUser } from '../context/UserContext';
 
 export const action = async ({ request }) => {
 	const formData = await request.formData();

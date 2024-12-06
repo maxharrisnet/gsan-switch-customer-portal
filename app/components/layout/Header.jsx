@@ -8,7 +8,6 @@ const Header = () => {
 	const path = location.pathname;
 	const { currentUser } = useUser();
 	const { shop } = useUser();
-	console.log('💸 Shop: ', shop);
 	const isGsanPage = path.includes('/gsan') || currentUser?.authType === 'shopify';
 	const isSwitchPage = path.includes('/switch') || currentUser?.authType === 'sonar';
 

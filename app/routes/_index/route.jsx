@@ -8,6 +8,7 @@ export const loader = async ({ request }) => {
 	const url = new URL(request.url);
 
 	if (url.searchParams.get('shop')) {
+		console.log('🎈 Redirecting to app page');
 		throw redirect(`/app?${url.searchParams.toString()}`);
 	}
 

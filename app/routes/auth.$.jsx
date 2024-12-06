@@ -1,8 +1,9 @@
 import { redirect } from '@remix-run/node';
 import { authenticate } from '../shopify.server';
-import { sessionStorage } from '../sessions.server';
+import { sessionStorage } from '../session.server';
 
 export const loader = async ({ request, params }) => {
+	console.log('🎈 auth.%24.jsx:', request.url);
 	const shop = params.shop;
 
 	if (!shop) {
