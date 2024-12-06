@@ -3,7 +3,7 @@
 client_id = "d7984080909f698690013bb4a01a4a27"
 name = "GSAN/Switch Customer Portal"
 handle = "gsan-customer-portal-3"
-application_url = "https://astronomy-citizenship-evaluation-combine.trycloudflare.com"
+application_url = "https://788e-2604-3d08-4e82-a500-4d56-fa9f-ee38-a4aa.ngrok-free.app"
 embedded = false
 
 [access_scopes]
@@ -12,9 +12,11 @@ scopes = "customer_read_customers,read_customers,read_online_store_navigation,re
 
 [auth]
 redirect_urls = [
-  "https://astronomy-citizenship-evaluation-combine.trycloudflare.com/auth/callback",
-  "https://astronomy-citizenship-evaluation-combine.trycloudflare.com/auth/shopify/callback",
-  "https://astronomy-citizenship-evaluation-combine.trycloudflare.com/api/auth/callback"
+  "https://788e-2604-3d08-4e82-a500-4d56-fa9f-ee38-a4aa.ngrok-free.app/auth/callback",
+  "https://788e-2604-3d08-4e82-a500-4d56-fa9f-ee38-a4aa.ngrok-free.app/auth/shopify/callback",
+  "https://788e-2604-3d08-4e82-a500-4d56-fa9f-ee38-a4aa.ngrok-free.app/api/auth/callback",
+  "https://788e-2604-3d08-4e82-a500-4d56-fa9f-ee38-a4aa.ngrok-free.app/gsan/login",
+  "https://788e-2604-3d08-4e82-a500-4d56-fa9f-ee38-a4aa.ngrok-free.app/performance"
 ]
 
 [webhooks]
@@ -29,4 +31,5 @@ embedded = false
 
 [build]
 dev_store_url = "gsan-test.myshopify.com"
-automatically_update_urls_on_dev = true
+automatically_update_urls_on_dev = false
+include_config_on_deploy = true

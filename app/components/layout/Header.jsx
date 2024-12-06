@@ -7,6 +7,8 @@ const Header = () => {
 	const location = useLocation();
 	const path = location.pathname;
 	const { currentUser } = useUser();
+	const { shop } = useUser();
+	console.log('💸 Shop: ', shop);
 	const isGsanPage = path.includes('/gsan') || currentUser?.authType === 'shopify';
 	const isSwitchPage = path.includes('/switch') || currentUser?.authType === 'sonar';
 
@@ -33,17 +35,16 @@ const Header = () => {
 						</a>
 					)} */}
 				</div>
-				{/* {currentUser && ( */}
 				<nav className='nav'>
 					<ul className='nav-list'>
 						<li className='nav-item'>
-							<Link to='/customers'>Customers</Link>
+							<Link to={`/customers?shop=${shop}`}>Customers</Link>
 						</li>
 						<li className='nav-item'>
-							<Link to='/performance'>Performance</Link>
+							<Link to={`/performance?shop=${shop}`}>Performance</Link>
 						</li>
 						<li className='nav-item'>
-							<Link to='/reports/starlink/usage'>Reports</Link>
+							<Link to={`/reports/starlink/usage?shop=${shop}`}>Reports</Link>
 						</li>
 					</ul>
 					<div className='user-avatar'>
@@ -66,7 +67,6 @@ const Header = () => {
 						</Form>
 					</div>
 				</nav>
-				{/* )} */}
 			</div>
 		</header>
 	);

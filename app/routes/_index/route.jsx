@@ -1,4 +1,4 @@
-import { json, redirect } from '@remix-run/node';
+import { redirect } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
 import { login } from '../../shopify.server';
 import Layout from '../../components/layout/Layout';
@@ -11,7 +11,7 @@ export const loader = async ({ request }) => {
 		throw redirect(`/app?${url.searchParams.toString()}`);
 	}
 
-	return json({ showForm: Boolean(login) });
+	return { showForm: Boolean(login) };
 };
 
 export default function App() {

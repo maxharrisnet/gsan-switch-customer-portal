@@ -1,4 +1,4 @@
-import { json, redirect } from '@remix-run/node';
+import { redirect } from '@remix-run/node';
 import { Links, Meta, Outlet, Scripts, ScrollRestoration, useLoaderData, useRouteError } from '@remix-run/react';
 import { getUserSession } from './session.server';
 import { UserProvider } from './context/UserContext';
@@ -16,7 +16,7 @@ export const loader = async ({ request }) => {
 	console.log('🏀 Page Loader: ', path);
 
 	const user = await getUserSession(request);
-	const shopName = process.env.SHOPIFY_SHOP_NAME; // Access the environment variable
+	const shop = process.env.SHOPIFY_SHOP_NAME; // Access the environment variable
 
 	// If there is a user session and the path is /login, redirect to /performance
 	// if (path.endsWith('/login') && user) {
@@ -30,11 +30,11 @@ export const loader = async ({ request }) => {
 	// 	return redirect('/login');
 	// }
 
-	return { user, shopName };
+	return { user, shop };
 };
 
 export default function Root() {
-	const { user, shopName } = useLoaderData();
+	const { user, shop } = useLoaderData();
 	return (
 		<html lang='en'>
 			<head>
@@ -49,7 +49,7 @@ export default function Root() {
 			<body>
 				<UserProvider
 					initialUser={user}
-					shopName={shopName}
+					shop={shop}
 				>
 					<Outlet />
 				</UserProvider>
