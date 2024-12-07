@@ -1,29 +1,15 @@
 import { redirect } from '@remix-run/node';
-import { Link, useLoaderData } from '@remix-run/react';
 import { login } from '../../shopify.server';
-import Layout from '../../components/layout/Layout';
-import styles from './styles.module.css';
 
 export const loader = async ({ request }) => {
 	const url = new URL(request.url);
+	const shop = url.searchParams.get('shop');
 
-	if (url.searchParams.get('shop')) {
-		console.log('🎈 Redirecting to dashboard');
-		throw redirect(`/dashboard?${url.searchParams.toString()}`);
+	if (shop) {
+		// Redirect to /auth to handle installation
+		console.log('🎈 Detected shop parameter. Redirecting to /auth...');
+		return redirect(`/auth?${url.searchParams.toString()}`);
 	}
 
 	return { showForm: Boolean(login) };
 };
-
-export default function App() {
-	const { showForm } = useLoaderData();
-
-	return (
-		<Layout>
-			<main className='content content-centered'>
-				<h1 className={styles.heading}>GSAN Customer Portal</h1>
-				<Link to='/login'>Login</Link>
-			</main>
-		</Layout>
-	);
-}
