@@ -1,6 +1,22 @@
-import { Layout } from '../components/layout/Layout';
 import { useActionData } from '@remix-run/react';
-import { useUser } from '../context/UserContext';
+import shopify from '../shopify.server';
+import { createUserSession } from '../session.server';
+import Layout from '../components/layout/Layout';
+
+const customerLoginMutation = `
+  mutation customerAccessTokenCreate($input: CustomerAccessTokenCreateInput!) {
+    customerAccessTokenCreate(input: $input) {
+      customerAccessToken {
+        accessToken
+        expiresAt
+      }
+      customerUserErrors {
+        field
+        message
+      }
+    }
+  }
+`;
 
 export const action = async ({ request }) => {
 	const formData = await request.formData();
@@ -8,53 +24,37 @@ export const action = async ({ request }) => {
 	const password = formData.get('password');
 
 	if (!email || !password) {
-		return { error: 'Email and password are required.' }, { status: 400 };
+		return { errors: [{ message: 'Email and password are required.' }] }, { status: 400 };
 	}
 
 	try {
-		const response = await fetch(`https://${process.env.SHOPIFY_STORE_DOMAIN}/api/2023-04/graphql.json`, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				'X-Shopify-Storefront-Access-Token': process.env.SHOPIFY_STOREFRONT_TOKEN,
-			},
-			body: JSON.stringify({
-				query: `#graphql
-            mutation customerAccessTokenCreate($input: CustomerAccessTokenCreateInput!) {
-              customerAccessTokenCreate(input: $input) {
-                customerAccessToken {
-                  accessToken
-                  expiresAt
-                }
-                userErrors {
-                  field
-                  message
-                }
-              }
-            }
-          `,
-				variables: { input: { email, password } },
-			}),
+		console.log('🔵 shopName:', process.env.SHOPIFY_STORE_DOMAIN);
+		const { storefront } = await shopify.unauthenticated.storefront(process.env.SHOPIFY_STORE_DOMAIN);
+
+		const response = await storefront.query({
+			data: customerLoginMutation,
+			variables: { input: { email, password } },
 		});
 
-		const result = await response.json();
+		console.log('🟢 Customer login response:', response);
 
-		if (result.errors || result.data.customerAccessTokenCreate.userErrors.length) {
-			return json({ error: 'Invalid login credentials.' }, { status: 401 });
+		const { customerAccessTokenCreate } = response.body.data;
+
+		if (customerAccessTokenCreate.customerUserErrors.length) {
+			return { errors: customerAccessTokenCreate.customerUserErrors }, { status: 401 };
 		}
 
-		return {
-			token: result.data.customerAccessTokenCreate.customerAccessToken,
-		};
+		const { accessToken, expiresAt } = customerAccessTokenCreate.customerAccessToken;
+
+		return createUserSession({ accessToken, expiresAt }, '/dashboard');
 	} catch (error) {
-		console.error('❌ Error during customer login:', error);
-		return { error: 'An unexpected error occurred.' }, { status: 500 };
+		console.error('Error during customer login:', error);
+		return { errors: [{ message: 'An unexpected error occurred. Please try again.' }] }, { status: 500 };
 	}
 };
 
 export default function Login() {
 	const actionData = useActionData();
-	const { shop } = useUser();
 
 	return (
 		<Layout>
@@ -94,24 +94,18 @@ export default function Login() {
 								placeholder='Password'
 								required
 							/>
-							<input
-								type='hidden'
-								name='shop'
-								value={shop}
-							/>
-							{/* Add this line */}
 							<button type='submit'>Login</button>
-							{actionData?.errors && (
-								<div>
-									<h2>Errors:</h2>
-									<ul>
-										{actionData.errors.map((error, index) => (
-											<li key={index}>{error.message}</li>
-										))}
-									</ul>
-								</div>
-							)}
 						</div>
+						{actionData?.errors && (
+							<div className='error-messages'>
+								<h2>Errors:</h2>
+								<ul>
+									{actionData.errors.map((error, index) => (
+										<li key={index}>{error.message}</li>
+									))}
+								</ul>
+							</div>
+						)}
 					</form>
 				</div>
 			</div>

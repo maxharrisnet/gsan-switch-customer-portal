@@ -45,7 +45,7 @@ export const action = async ({ request }) => {
 
 		return json({ token: result.data.customerAccessTokenCreate.customerAccessToken });
 	} catch (error) {
-		console.error('❌ Error during customer login:', error);
+		console.error('❌ Error during customer login callback:', error);
 		return json({ error: 'An unexpected error occurred.' }, { status: 500 });
 	}
 };

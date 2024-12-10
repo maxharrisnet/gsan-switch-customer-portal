@@ -11,7 +11,7 @@ export const sessionStorage = createCookieSessionStorage({
 	},
 });
 
-export async function createUserSession(userData, authType, redirectTo) {
+export default async function createUserSession(userData, authType, redirectTo) {
 	console.log('🐣 Creating session for auth type:', authType);
 	const session = await sessionStorage.getSession();
 

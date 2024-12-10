@@ -6,6 +6,11 @@ import prisma from './db.server';
 
 console.log('🟢 shopify.server.js');
 
+console.log('⭐ SHOPIFY_API_KEY:', process.env.SHOPIFY_API_KEY);
+console.log('⭐ SHOPIFY_API_SECRET:', process.env.SHOPIFY_API_SECRET);
+console.log('⭐ SHOPIFY_APP_URL:', process.env.SHOPIFY_APP_URL);
+console.log('⭐ SCOPES:', process.env.SCOPES);
+
 const shopify = shopifyApp({
 	apiKey: process.env.SHOPIFY_API_KEY,
 	apiSecretKey: process.env.SHOPIFY_API_SECRET || '',
@@ -14,11 +19,9 @@ const shopify = shopifyApp({
 	appUrl: process.env.SHOPIFY_APP_URL || '',
 	authPathPrefix: '/auth',
 	sessionStorage: new PrismaSessionStorage(prisma),
-	distribution: AppDistribution.AppStore,
+	distribution: AppDistribution.SingleMerchant,
+	isEmbeddedApp: false,
 	restResources,
-	future: {
-		unstable_newEmbeddedAuthStrategy: true,
-	},
 	...(process.env.SHOP_CUSTOM_DOMAIN ? { customShopDomains: [process.env.SHOP_CUSTOM_DOMAIN] } : {}),
 });
 
