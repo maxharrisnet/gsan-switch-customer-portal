@@ -9,6 +9,8 @@ export const links = () => [{ rel: 'stylesheet', href: polarisStyles }];
 
 export const loader = async ({ request }) => {
 	await authenticate.admin(request);
+	console.log('🔐 Starting authentication process from root /');
+	console.log('Shopify API Key:', process.env.SHOPIFY_API_KEY);
 
 	return { apiKey: process.env.SHOPIFY_API_KEY || '' };
 };
@@ -21,7 +23,7 @@ export default function App() {
 			isEmbeddedApp={false}
 			apiKey={apiKey}
 		>
-			<NavMenu>
+			<nav>
 				<Link
 					to='/app'
 					rel='home'
@@ -29,7 +31,7 @@ export default function App() {
 					Home
 				</Link>
 				<Link to='/app/additional'>Additional page</Link>
-			</NavMenu>
+			</nav>
 			<Outlet />
 		</AppProvider>
 	);
