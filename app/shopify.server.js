@@ -13,8 +13,11 @@ const shopify = shopifyApp({
 	authPathPrefix: '/auth',
 	sessionStorage: new PrismaSessionStorage(prisma),
 	distribution: AppDistribution.SingleMerchant,
-	isEmbeddedApp: true,
+	isEmbeddedApp: false,
 	restResources,
+	future: {
+		unstable_newEmbeddedAuthStrategy: true, // Enable the new auth strategy
+	},
 	...(process.env.SHOP_CUSTOM_DOMAIN ? { customShopDomains: [process.env.SHOP_CUSTOM_DOMAIN] } : {}),
 });
 

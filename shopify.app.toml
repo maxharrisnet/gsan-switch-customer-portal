@@ -1,10 +1,10 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
-client_id = "406624b864e23c167e8e18e8b7f5c6d2"
-name = "GSAN Portal"
-handle = "gsan-portal"
+client_id = "65cb33125a4e18e05c5190a6b3fe2809"
+name = "GSAN App"
+handle = "gsan-app"
 application_url = "https://d6c8-2604-3d08-4e82-a500-81f4-333b-5911-531b.ngrok-free.app"
-embedded = true
+embedded = false
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes

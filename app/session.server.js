@@ -1,53 +1,28 @@
-import { createCookieSessionStorage, redirect } from '@remix-run/node';
+// session.server.js
+import { createCookieSessionStorage } from '@remix-run/node';
+import { redirect } from '@remix-run/node';
 
 export const sessionStorage = createCookieSessionStorage({
 	cookie: {
-		name: 'user_session',
+		name: '__session',
 		httpOnly: true,
-		path: '/',
+		secure: process.env.NODE_ENV === 'production',
 		sameSite: 'lax',
 		secrets: [process.env.SESSION_SECRET],
-		secure: process.env.NODE_ENV === 'production',
 	},
 });
 
-export default async function createUserSession(userData, authType, redirectTo) {
-	console.log('🐣 Creating session for auth type:', authType);
+export async function createUserSession(accessToken, shop, redirectTo) {
 	const session = await sessionStorage.getSession();
-
-	if (authType === 'sonar') {
-		session.set('user', {
-			authType,
-			userId: userData.contact_id,
-			accountId: userData.account_id,
-			username: userData.username,
-			contactName: userData.contact_name,
-		});
-	} else if (authType === 'shopify') {
-		session.set('user', {
-			authType,
-			accessToken: userData.accessToken,
-			shopId: userData.shopId,
-		});
-	} else {
-		throw new Error('Unknown authentication type');
-	}
-
-	const headers = { 'Set-Cookie': await sessionStorage.commitSession(session) };
-	return redirect(redirectTo, { headers });
+	session.set(`accessToken:${shop}`, accessToken);
+	return redirect(redirectTo, {
+		headers: {
+			'Set-Cookie': await sessionStorage.commitSession(session),
+		},
+	});
 }
 
 export async function getUserSession(request) {
 	const session = await sessionStorage.getSession(request.headers.get('Cookie'));
-	return session.has('user') ? session.get('user') : null;
-}
-
-export async function destroyUserSession(request) {
-	const session = await sessionStorage.getSession(request.headers.get('Cookie'));
-	console.log('💣 Destroying session:', session);
-	return redirect('/gsan/login', {
-		headers: {
-			'Set-Cookie': await sessionStorage.destroySession(session),
-		},
-	});
+	return session.data;
 }
